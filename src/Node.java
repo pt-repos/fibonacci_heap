@@ -3,7 +3,7 @@ import java.util.Objects;
 public class Node {
 
     private String keyword;
-    private int count = 0;
+    private int priority = 0;
     private int degree = 0;
     private Node child;
     private Node parent;
@@ -12,16 +12,20 @@ public class Node {
     private boolean childCut = false;
 
     public Node() {
+        this.left = this;
+        this.right = this;
     }
 
-    public Node(String keyword, int count) {
+    public Node(String keyword, int priority) {
         this.keyword = keyword;
-        this.count = count;
+        this.priority = priority;
+        this.left = this;
+        this.right = this;
     }
 
-    public Node(String keyword, int count, int degree, Node child, Node parent, Node left, Node right, boolean childCut) {
+    public Node(String keyword, int priority, int degree, Node child, Node parent, Node left, Node right, boolean childCut) {
         this.keyword = keyword;
-        this.count = count;
+        this.priority = priority;
         this.degree = degree;
         this.child = child;
         this.parent = parent;
@@ -38,12 +42,12 @@ public class Node {
         this.keyword = keyword;
     }
 
-    public int getCount() {
-        return count;
+    public int getPriority() {
+        return priority;
     }
 
-    public void setCount(int count) {
-        this.count = count;
+    public void setPriority(int priority) {
+        this.priority = priority;
     }
 
     public int getDegree() {
