@@ -10,8 +10,8 @@ public class Main {
         node = new Node("test2", 3);
         heap.insert(node);
 
-        node = new Node("test3", 1);
-        heap.insert(node);
+        Node node1 = new Node("test3", 1);
+        heap.insert(node1);
 
         node = new Node("test4", 8);
         heap.insert(node);
@@ -38,10 +38,13 @@ public class Main {
         heap.display();
         System.out.println("max node: " + heap.getMaxNode().getPriority());
 
-        for (int index = 0; index < 7; index++) {
+        for (int index = 0; index < 1; index++) {
             System.out.println("--------------------------");
             heap.removeMax();
             heap.display();
         }
+
+        heap.increaseKey(node1, 15);
+        heap.display();
     }
 }

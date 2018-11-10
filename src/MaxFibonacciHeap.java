@@ -65,7 +65,13 @@ public class MaxFibonacciHeap {
             child.getRight().setLeft(child.getLeft());
 //            removeFromSiblingsList(child);
             child.setParent(null);
-            maxNode.setChild(child.getRight());
+
+            if (degree != 1) {
+                maxNode.setChild(child.getRight());
+            } else {
+                maxNode.setChild(null);
+            }
+
             insert(child);
             degree--;
         }
@@ -77,6 +83,17 @@ public class MaxFibonacciHeap {
         combine();
 
         return max;
+    }
+
+    public void increaseKey(Node node, int priority) {
+
+        node.setPriority(node.getPriority() + priority);
+
+        if (!maxNode.equals(node) && node.getPriority() > node.getParent().getPriority()) {
+            cascadingCut(node);
+        }
+
+        maxNode = node;
     }
 
     /**
@@ -166,6 +183,35 @@ public class MaxFibonacciHeap {
 
         degreeTable[greater.getDegree()] = greater;
         return greater;
+    }
+
+    private void cascadingCut(Node node) {
+
+        node.getLeft().setRight(node.getRight());
+        node.getRight().setLeft(node.getLeft());
+
+        if (1 != node.getParent().getDegree()) {
+            node.getParent().setChild(node.getRight());
+        } else {
+            node.getParent().setChild(null);
+        }
+
+        node.getParent().setDegree(node.getParent().getDegree() - 1);
+
+        node.setRight(maxNode);
+        node.setLeft(maxNode.getLeft());
+        maxNode.getLeft().setRight(node);
+        maxNode.setLeft(node);
+
+//        node.setRight(node.getParent());
+//        node.setLeft(node.getParent().getLeft());
+//        node.getParent().setLeft(node);
+
+        if (node.getParent().isChildCut()) {
+            cascadingCut(node.getParent());
+        }
+
+        node.setParent(null);
     }
 
     public void display() {
