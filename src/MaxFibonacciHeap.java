@@ -1,18 +1,12 @@
 public class MaxFibonacciHeap {
 
     private Node maxNode;
-    private int heapSize;
 
     public MaxFibonacciHeap() {
     }
 
     public MaxFibonacciHeap(Node maxNode) {
         this.maxNode = maxNode;
-    }
-
-    public MaxFibonacciHeap(Node maxNode, int heapSize) {
-        this.maxNode = maxNode;
-        this.heapSize = heapSize;
     }
 
     public Node getMaxNode() {
@@ -23,15 +17,9 @@ public class MaxFibonacciHeap {
         this.maxNode = maxNode;
     }
 
-    public int getHeapSize() {
-        return heapSize;
-    }
-
-    public void setHeapSize(int heapSize) {
-        this.heapSize = heapSize;
-    }
-
     /**
+     * Inserts a new node to the Max Fibonacci Heap.
+     *
      * @param newNode
      */
     public void insert(Node newNode) {
@@ -47,12 +35,12 @@ public class MaxFibonacciHeap {
                 maxNode = newNode;
             }
         }
-
-        heapSize++;
     }
 
     /**
-     * @return
+     * Removes the maxNode from Max Fibonacci Heap.
+     *
+     * @return maxNode which was removed from the heap.
      */
     public Node removeMax() {
 
@@ -85,19 +73,28 @@ public class MaxFibonacciHeap {
         return max;
     }
 
+    /**
+     * Increases the priority of the given node.
+     *
+     * @param node     Node which is to be updated.
+     * @param priority amount to increase the node's priority by.
+     */
     public void increaseKey(Node node, int priority) {
 
         node.setPriority(node.getPriority() + priority);
 
-        if (!maxNode.equals(node) && node.getPriority() > node.getParent().getPriority()) {
-            cascadingCut(node);
+        if (!maxNode.equals(node)) {
+            if (null != node.getParent() && node.getPriority() > node.getParent().getPriority()) {
+                cascadingCut(node);
+                maxNode = findTopLevelMax();
+            }
         }
-
-        maxNode = node;
     }
 
     /**
-     * @return
+     * Finds Node with highest priority in the top level siblings list.
+     *
+     * @return Node with the maximum priority.
      */
     private Node findTopLevelMax() {
         Node head = maxNode.getRight().getRight();
@@ -113,10 +110,10 @@ public class MaxFibonacciHeap {
     }
 
     /**
-     *
+     * Pairwise combines Nodes with equal degrees in the top level siblings list.
      */
     private void combine() {
-        Node[] degreeTable = new Node[20];
+        Node[] degreeTable = new Node[25];
         Node head = maxNode;
 
         do {
@@ -129,15 +126,17 @@ public class MaxFibonacciHeap {
                 Node node = meld(head, degreeTable);
                 head = node.getRight();
             }
-
-//            head = head.getRight();
         } while (head != maxNode);
     }
 
     /**
-     * @param node1
-     * @param degreeTable
-     * @return
+     * Melds two nodes with equal degrees.
+     * Results in the node with higher priority as the parent.
+     * Returns the parent node.
+     *
+     * @param node1         Node to be melded.
+     * @param degreeTable   Array of Nodes indexed by their respective degrees.
+     * @return Parent Node after recursive meld operation.
      */
     private Node meld(Node node1, Node[] degreeTable) {
 
@@ -185,35 +184,42 @@ public class MaxFibonacciHeap {
         return greater;
     }
 
+    /**
+     * Removes the node from it's siblings list and inserts into the top level list.
+     * Operation is performed recursively on node's parent until childCut value false is encountered.
+     *
+     * @param node Node to be cut.
+     */
     private void cascadingCut(Node node) {
 
         node.getLeft().setRight(node.getRight());
         node.getRight().setLeft(node.getLeft());
 
-        if (1 != node.getParent().getDegree()) {
-            node.getParent().setChild(node.getRight());
+        Node parent = node.getParent();
+
+        if (1 != parent.getDegree()) {
+            parent.setChild(node.getRight());
         } else {
-            node.getParent().setChild(null);
+            parent.setChild(null);
         }
 
-        node.getParent().setDegree(node.getParent().getDegree() - 1);
+        parent.setDegree(parent.getDegree() - 1);
 
         node.setRight(maxNode);
         node.setLeft(maxNode.getLeft());
         maxNode.getLeft().setRight(node);
         maxNode.setLeft(node);
 
-//        node.setRight(node.getParent());
-//        node.setLeft(node.getParent().getLeft());
-//        node.getParent().setLeft(node);
-
-        if (node.getParent().isChildCut()) {
-            cascadingCut(node.getParent());
+        if (parent.isChildCut()) {
+            cascadingCut(parent);
         }
 
         node.setParent(null);
     }
 
+    /**
+     *
+     */
     public void display() {
 
         Node head = maxNode;
@@ -229,6 +235,10 @@ public class MaxFibonacciHeap {
         } while (head != maxNode);
     }
 
+    /**
+     * @param node
+     * @param level
+     */
     private void displayChildren(Node node, int level) {
 
         Node head = node.getChild();
